@@ -1,9 +1,14 @@
 import express from "express";
 import { getCurrentUser } from "../controllers/userController.js";
-import authMiddleware from "../middlewares/authMiddleware.js";
+import passport from "passport";
 
 const router = express.Router();
 
-router.get("/current", authMiddleware, getCurrentUser);
+
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  getCurrentUser
+);
 
 export default router;
