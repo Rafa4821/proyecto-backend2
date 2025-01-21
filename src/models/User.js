@@ -5,10 +5,12 @@ const userSchema = new mongoose.Schema({
   first_name: { type: String, required: true },
   last_name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  age: { type: Number, required: true },
   password: { type: String, required: true },
-  cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   role: { type: String, default: "user" },
+  verificationToken: { type: String },
+  verified: { type: Boolean, default: false },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
 });
 
 userSchema.pre("save", async function (next) {
@@ -16,9 +18,5 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-
-userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
 
 export default mongoose.model("User", userSchema);

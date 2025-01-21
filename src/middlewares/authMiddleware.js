@@ -1,19 +1,12 @@
-import jwt from "jsonwebtoken";
+import passport from "passport";
 
-const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ message: "Acceso no autorizado" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+export const authorizationMiddleware = (roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Acceso denegado" });
+    }
     next();
-  } catch (error) {
-    res.status(401).json({ message: "Token no válido" });
-  }
+  };
 };
 
-export default authMiddleware;
+export const authenticateJwt = passport.authenticate("jwt", { session: false });
